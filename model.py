@@ -17,18 +17,23 @@ class VAE(nn.Module):
 
         super(VAE, self).__init__()
 
+        self.linear = nn.Linear(in_features=5, out_features=5)
+        self.shrink = nn.Linear(in_features=5, out_features=2)
+        self.expand = nn.Linear(in_features=2, out_features=5)
+
     def encoder(self, x):
 
-        x = x.linear(in_features=5, out_features=5)
-        mean = x.linear(in_features=5, out_features=2)
-        log_var = x.linear(in_features=5, out_features=2)
-        x = numpy.random.normal(loc=mean, scale=math.exp(log_var/2), size=2)
+        x = self.linear(x)
+        mean = self.shrink(x)
+        log_var = self.shrink(x)
+        epsilon = torch.randn_like(log_var).to("cpu")
+        z = mean + log_var * epsilon
 
         return x
 
     def decoder(self, x):
 
-        x = x.linear(in_features=2, out_features=5)
-        x = x.linear(in_features=5, out_features=5)
+        x = self.expand(x)
+        x = self.linear(x)
 
         return x
