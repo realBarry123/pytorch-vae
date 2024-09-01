@@ -18,22 +18,37 @@ class VAE(nn.Module):
         super(VAE, self).__init__()
 
         self.linear = nn.Linear(in_features=5, out_features=5)
-        self.shrink = nn.Linear(in_features=5, out_features=2)
+
+        self.mean = nn.Linear(in_features=5, out_features=2)
+        self.log_var = nn.Linear(in_features=5, out_features=2)
+
         self.expand = nn.Linear(in_features=2, out_features=5)
+
+        self.sigmoid = nn.Sigmoid()
+        self.leaky_relu = nn.LeakyReLU()
 
     def encoder(self, x):
 
         x = self.linear(x)
-        mean = self.shrink(x)
-        log_var = self.shrink(x)
+        x = self.leaky_relu(x)
+        mean = self.mean(x)
+        log_var = self.log_var(x)
         epsilon = torch.randn_like(log_var).to("cpu")
-        z = mean + log_var * epsilon
 
-        return x
+        sd = torch.exp(0.5 * log_var)
+        z = mean + sd * epsilon
+
+        return z
 
     def decoder(self, x):
 
         x = self.expand(x)
-        x = self.linear(x)
+
+        return self.sigmoid(x)
+
+    def forward(self, x):
+
+        x = self.encoder(x)
+        x = self.decoder(x)
 
         return x
