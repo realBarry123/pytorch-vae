@@ -44,7 +44,7 @@ class VAE(nn.Module):
 
         x = self.expand(x)
 
-        return x
+        return self.sigmoid(x)
 
     def forward(self, x):
 

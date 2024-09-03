@@ -5,6 +5,7 @@ from model import VAE, weights_init
 
 learning_rate = 0.0002
 batch_size = 16
+beta = 0.7
 
 def augment(list):
     new_list = []
@@ -14,12 +15,23 @@ def augment(list):
             new_list.append([x * transposition for x in chord])
     return new_list
 
+def normalize(list):
+    new_list = []
+    for chord in list:
+        new_chord = []
+        for note in chord:
+            note = (note - 130.81) / (1046.48 - 130.81)
+            new_chord.append(note)
+        new_list.append(new_chord)
+    return new_list
+
+
 chords = [
     [130.81, 196.0, 261.63, 329.63, 493.88],
     [130.81, 196.0, 261.63, 349.23, 466.16],
 ]
 
-chords = torch.tensor(augment(chords))
+chords = torch.tensor(normalize(augment(chords)))
 chord_loader = torch.utils.data.DataLoader(chords, batch_size=batch_size, shuffle=True)
 
 def kl_divergence(mean, log_var):
