@@ -39,13 +39,13 @@ def kl_divergence(mean, log_var):
     return kl_loss
 
 mse_loss = nn.MSELoss(reduction='sum')
-def loss_function(x, x_hat, mean, log_var):
+def loss_function(x, x_hat, mean, log_var, beta=0.1):
     reproduction_loss = mse_loss(x_hat, x)
-    print(reproduction_loss.item())
     KLD = kl_divergence(mean, log_var)
-    #print(KLD.item())
+    print("Reproduction Loss:", reproduction_loss.item())
+    print("KLD Loss:", KLD.item())
 
-    return reproduction_loss + KLD
+    return reproduction_loss + KLD * beta
 
 net = VAE()
 weights_init(net)
@@ -61,7 +61,7 @@ def train():
 
         reconstructed, mean, log_var = net(data)
 
-        loss = loss_function(data, reconstructed, mean, log_var)
+        loss = loss_function(data, reconstructed, mean, log_var, beta=beta)
 
         loss.backward()
 
@@ -69,5 +69,5 @@ def train():
 
         # print(loss.item())
 
-for i in range(100):
+for i in range(5000):
     train()
