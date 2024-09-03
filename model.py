@@ -38,17 +38,17 @@ class VAE(nn.Module):
         sd = torch.exp(0.5 * log_var)
         z = mean + sd * epsilon
 
-        return z
+        return z, mean, log_var
 
     def decoder(self, x):
 
         x = self.expand(x)
 
-        return self.sigmoid(x)
+        return x
 
     def forward(self, x):
 
-        x = self.encoder(x)
+        x, mean, log_var = self.encoder(x)
         x = self.decoder(x)
 
-        return x
+        return x, mean, log_var
