@@ -1,6 +1,9 @@
 import random
+import numpy as np
+from time import sleep
 import torch
 import torch.nn as nn
+import matplotlib.pyplot as plt
 from model import VAE, weights_init
 
 learning_rate = 0.0002
@@ -25,10 +28,18 @@ def normalize(list):
         new_list.append(new_chord)
     return new_list
 
+def denormalize(chord):
+    new_chord = []
+    for note in chord:
+        note = note * (1046.48 - 130.81) + 130.81
+        new_chord.append(note)
+    return new_chord
+
 
 chords = [
     [130.81, 196.0, 261.63, 329.63, 493.88],
     [130.81, 196.0, 261.63, 349.23, 466.16],
+    [0, 0, 0, 1, 1]
 ]
 
 chords = torch.tensor(normalize(augment(chords)))
@@ -69,5 +80,28 @@ def train():
 
         # print(loss.item())
 
-for i in range(5000):
+for i in range(10000):
     train()
+
+def plot_results(list):
+    results = net.encoder(list)[0].detach()
+    x = [r[0] for r in results]
+    y = [r[1] for r in results]
+    plt.scatter(x, y)
+    plt.show()
+
+
+plot_results(chords[0:16])
+plot_results(chords[16:32])
+plot_results(chords[32:48])
+
+import pyautogui
+
+
+while True:
+
+    mouse_x, mouse_y = pyautogui.position()
+
+    print(denormalize(net.decoder(torch.tensor([float(mouse_x), float(mouse_y)])).detach()))
+
+    sleep(0.2)
