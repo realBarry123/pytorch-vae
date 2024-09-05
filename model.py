@@ -18,7 +18,8 @@ class VAE(nn.Module):
 
         super(VAE, self).__init__()
 
-        self.linear = nn.Linear(in_features=5, out_features=5)
+        self.linear1 = nn.Linear(in_features=5, out_features=5)
+        self.linear2 = nn.Linear(in_features=5, out_features=5)
 
         self.mean = nn.Linear(in_features=5, out_features=2)
         self.log_var = nn.Linear(in_features=5, out_features=2)
@@ -30,7 +31,7 @@ class VAE(nn.Module):
 
     def encoder(self, x):
 
-        x = self.linear(x)
+        x = self.linear1(x)
         x = self.leaky_relu(x)
         mean = self.mean(x)
         log_var = self.log_var(x)
@@ -44,12 +45,13 @@ class VAE(nn.Module):
     def decoder(self, x):
 
         x = self.expand(x)
+        x = self.leaky_relu(x)
 
+        x = self.linear2(x)
         return self.sigmoid(x)
 
     def forward(self, x):
 
         x, mean, log_var = self.encoder(x)
         x = self.decoder(x)
-
         return x, mean, log_var

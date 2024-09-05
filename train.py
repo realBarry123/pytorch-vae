@@ -13,8 +13,8 @@ beta = 0.7
 def augment(list):
     new_list = []
     for chord in list:
-        for _ in range(16):
-            transposition = random.random() * 2
+        for _ in range(128):
+            transposition = random.random() * 2 + 1
             new_list.append([x * transposition for x in chord])
     return new_list
 
@@ -34,7 +34,6 @@ def denormalize(chord):
         note = note * (1046.48 - 130.81) + 130.81
         new_chord.append(note)
     return new_chord
-
 
 chords = [
     [130.81, 196.0, 261.63, 329.63, 493.88],
@@ -89,10 +88,5 @@ def plot_results(list):
     y = [r[1] for r in results]
     plt.scatter(x, y)
     plt.show()
-
-
-#plot_results(chords[0:16])
-#plot_results(chords[16:32])
-#plot_results(chords[32:48])
 
 torch.save(net.state_dict(), "Models/net.pkl")
