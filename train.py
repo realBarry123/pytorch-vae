@@ -91,17 +91,8 @@ def plot_results(list):
     plt.show()
 
 
-plot_results(chords[0:16])
-plot_results(chords[16:32])
-plot_results(chords[32:48])
+#plot_results(chords[0:16])
+#plot_results(chords[16:32])
+#plot_results(chords[32:48])
 
-import pyautogui
-
-
-while True:
-
-    mouse_x, mouse_y = pyautogui.position()
-
-    print(denormalize(net.decoder(torch.tensor([float(mouse_x), float(mouse_y)])).detach()))
-
-    sleep(0.2)
+torch.save(net.state_dict(), "Models/net.pkl")
