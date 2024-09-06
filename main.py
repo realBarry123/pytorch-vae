@@ -6,7 +6,9 @@ from model import VAE
 net = VAE()
 net.load_state_dict(torch.load("Models/net.pkl"))
 
+
 def vec_to_chord(x, y):
+
     chord = net.decoder(torch.tensor([float(x), float(y)])).detach()
     new_chord = []
     for note in chord:
@@ -14,11 +16,20 @@ def vec_to_chord(x, y):
         new_chord.append(note)
     return new_chord
 
-while True:
 
-    mouse_x, mouse_y = pyautogui.position()
-    max_x, max_y = pyautogui.size()
-    print(mouse_x/max_x, mouse_y/max_y)
-    print(vec_to_chord(mouse_x/max_x, mouse_y/max_y))
+def test_with_mouse():
 
-    sleep(0.2)
+    while True:
+        mouse_x, mouse_y = pyautogui.position()
+        max_x, max_y = pyautogui.size()
+        print(mouse_x/max_x, mouse_y/max_y)
+        print(vec_to_chord(mouse_x/max_x, mouse_y/max_y))
+
+        sleep(0.2)
+
+def export(model, name):
+
+    onnx_program = torch.onnx.dynamo_export(model, torch.randn(1, 5))
+    onnx_program.save(name)
+    
+export(net, "chord_vae.onnx")
