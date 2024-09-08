@@ -29,6 +29,6 @@ def test_with_mouse():
 
 def export(model, name):
 
-    torch.onnx.export(model, torch.randn(1, 5), name)
+    torch.onnx.export(model, torch.randn(1, 2), name)
 
 export(net, "chord_vae.onnx")
