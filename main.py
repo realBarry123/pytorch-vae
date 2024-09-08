@@ -29,7 +29,6 @@ def test_with_mouse():
 
 def export(model, name):
 
-    onnx_program = torch.onnx.dynamo_export(model, torch.randn(1, 5))
-    onnx_program.save(name)
-    
+    torch.onnx.export(model, torch.randn(1, 5), name)
+
 export(net, "chord_vae.onnx")
